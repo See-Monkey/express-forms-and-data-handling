@@ -1,22 +1,40 @@
 const { body, validationResult, matchedData } = require("express-validator");
 const usersStorage = require("../storages/usersStorage");
 
-const alphaErr = "must only contain letters.";
-const lengthErr = "must be between 1 and 10 characters.";
+const minAge = 18;
+const maxAge = 120;
+const maxBio = 200;
+
+const nameAlphaErr = "must only contain letters.";
+const nameLengthErr = "must be between 1 and 10 characters.";
+const emailError = "Email must be a valid email address";
+const ageError = `Age must be a number between ${minAge} and ${maxAge}`;
+const bioError = `Bio cannot be more than ${maxBio} characters`;
 
 const validateUser = [
 	body("firstName")
 		.trim()
 		.isAlpha()
-		.withMessage(`First name ${alphaErr}`)
+		.withMessage(`First name ${nameAlphaErr}`)
 		.isLength({ min: 1, max: 10 })
-		.withMessage(`First name ${lengthErr}`),
+		.withMessage(`First name ${nameLengthErr}`),
+
 	body("lastName")
 		.trim()
 		.isAlpha()
-		.withMessage(`Last name ${alphaErr}`)
+		.withMessage(`Last name ${nameAlphaErr}`)
 		.isLength({ min: 1, max: 10 })
-		.withMessage(`Last name ${lengthErr}`),
+		.withMessage(`Last name ${nameLengthErr}`),
+
+	body("email").trim().isEmail().withMessage(emailError),
+
+	body("age")
+		.optional({ value: "falsy" })
+		.isInt({ min: minAge, max: maxAge })
+		.withMessage(ageError)
+		.toInt(),
+
+	body("bio").optional().trim().isLength({ max: maxBio }).withMessage(bioError),
 ];
 
 exports.usersListGet = (req, res) => {
@@ -43,8 +61,8 @@ exports.usersCreatePost = [
 				errors: errors.array(),
 			});
 		}
-		const { firstName, lastName } = matchedData(req);
-		usersStorage.addUser({ firstName, lastName });
+		const { firstName, lastName, email, age, bio } = matchedData(req);
+		usersStorage.addUser({ firstName, lastName, email, age, bio });
 		res.redirect("/");
 	},
 ];
@@ -69,8 +87,14 @@ exports.usersUpdatePost = [
 				errors: errors.array(),
 			});
 		}
-		const { firstName, lastName } = matchedData(req);
-		usersStorage.updateUser(req.params.id, { firstName, lastName });
+		const { firstName, lastName, email, age, bio } = matchedData(req);
+		usersStorage.updateUser(req.params.id, {
+			firstName,
+			lastName,
+			email,
+			age,
+			bio,
+		});
 		res.redirect("/");
 	},
 ];
