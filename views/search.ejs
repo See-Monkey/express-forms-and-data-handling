@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%= title %></title>
+</head>
+<body>
+	<h1><%= title %></h1>
+
+	<%- include("partials/errors.ejs") %>
+
+	<a href="/">← Back to all users</a>
+
+	<% if (users.length === 0) { %>
+		<p>No users matched your search.</p>
+	<% } else { %>
+		<ul>
+			<% users.forEach(function(user) { %>
+				<li>
+					<strong><%= user.firstName %> <%= user.lastName %></strong><br />
+					Email: <%= user.email %>
+					<% if (user.age) { %> | Age: <%= user.age %><% } %>
+					<% if (user.bio) { %><br />Bio: <%= user.bio %><% } %>
+				</li>
+			<% }); %>
+		</ul>
+	<% } %>
+</body>
+</html>

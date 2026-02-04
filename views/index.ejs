@@ -5,6 +5,33 @@
 </head>
 <body>
   <h1><%= title %></h1>
+
+  <div class="searchContainer">
+    <h4>Search:</h4>
+    <form action="/search" method="GET">
+      <div class="nameContainer">
+				<label for="firstName">First Name: </label>
+        <input
+					type="text"
+					name="firstName"
+					id="firstName"
+				/>
+        <label for="lastName">Last Name: </label>
+				<input
+					type="text"
+					name="lastName"
+					id="lastName"
+				/>
+			</div>
+			<div class="emailContainer">
+        <label for="email">Email Address: </label>
+				<input type="email" name="email" id="email" />
+      </div>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <% if (locals.users.length > 0) { %><h4>Users:</h4><% } %>
   <ul>
     <% if (locals.users) {%>
     <% users.forEach(function(user) { %>
@@ -21,6 +48,7 @@
     <% }); %>
   <% } %>
   </ul>
+  
   <a href="/create">Create a user</a>
 </body>
 </html>

@@ -1,4 +1,9 @@
-const { body, validationResult, matchedData } = require("express-validator");
+const {
+	body,
+	validationResult,
+	matchedData,
+	query,
+} = require("express-validator");
 const usersStorage = require("../storages/usersStorage");
 
 const minAge = 18;
@@ -103,3 +108,51 @@ exports.usersDeletePost = (req, res) => {
 	usersStorage.deleteUser(req.params.id);
 	res.redirect("/");
 };
+
+const validateSearch = [
+	query("firstName").optional({ values: "falsy" }).trim(),
+	query("lastName").optional({ values: "falsy" }).trim(),
+	query("email")
+		.optional({ values: "falsy" })
+		.trim()
+		.isEmail()
+		.withMessage(emailError),
+];
+
+exports.usersSearchGet = [
+	validateSearch,
+	(req, res) => {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			return res.status(400).render("search", {
+				title: "Search results",
+				users: [],
+				errors: errors.array(),
+			});
+		}
+
+		const { firstName, lastName, email } = matchedData(req, {
+			locations: ["query"],
+		});
+
+		const users = usersStorage.getUsers();
+
+		const filteredUsers = users.filter((user) => {
+			return (
+				(!firstName ||
+					user.firstName.toLowerCase().includes(firstName.toLowerCase())) &&
+				(!lastName ||
+					user.lastName.toLowerCase().includes(lastName.toLowerCase())) &&
+				(!email || user.email.toLowerCase().includes(email.toLowerCase()))
+			);
+		});
+
+		res.render("search", {
+			title: "Search results",
+			users: filteredUsers,
+			firstName,
+			lastName,
+			email,
+		});
+	},
+];
