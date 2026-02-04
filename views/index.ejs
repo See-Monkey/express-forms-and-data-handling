@@ -8,7 +8,11 @@
   <ul>
     <% if (locals.users) {%>
     <% users.forEach(function(user) { %>
-      <li>ID: <%= user.id %>, Name: <%= user.firstName %> <%= user.lastName %></li>
+      <div>
+        <li>ID: <%= user.id %> | Name: <%= user.firstName %> <%= user.lastName %></li>
+        <li>Email Address: <%= user.email %><% if (user.age) {%> | Age: <%= user.age %><% } %></li>
+        <% if (user.bio) {%><li>Bio: <%= user.bio %></li><% } %>
+      </div>
       <a href="/<%= user.id %>/update">Update</a>
       <!-- This time we're sending a POST request to our route, so we need a form. -->
       <form action="/<%= user.id %>/delete" method="POST" style="display:inline;">

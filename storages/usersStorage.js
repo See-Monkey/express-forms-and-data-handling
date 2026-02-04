@@ -19,7 +19,7 @@ class UsersStorage {
 		return this.storage[id];
 	}
 
-	updateUser(id, { firstName, lastName, email, agi, bio }) {
+	updateUser(id, { firstName, lastName, email, age, bio }) {
 		this.storage[id] = { id, firstName, lastName, email, age, bio };
 	}
 
